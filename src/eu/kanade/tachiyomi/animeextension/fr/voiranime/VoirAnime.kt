@@ -3,6 +3,7 @@ package eu.kanade.tachiyomi.animeextension.fr.voiranime
 import android.app.Application
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.PreferenceScreen
 import eu.kanade.tachiyomi.animesource.ConfigurableAnimeSource
@@ -31,16 +32,18 @@ import uy.kohesive.injekt.api.get
 class VoirAnime : ParsedAnimeHttpSource(), ConfigurableAnimeSource {
 
     override val name = "VoirAnime"
-    override val baseUrl = "https://v6.voiranime.com"
     override val lang = "fr"
     override val supportsLatest = true
-
-    override fun headersBuilder(): Headers.Builder = super.headersBuilder()
-        .add("Referer", baseUrl)
 
     private val preferences: SharedPreferences by lazy {
         Injekt.get<Application>().getSharedPreferences("source_$id", 0x0000)
     }
+
+    override val baseUrl: String
+        get() = preferences.getString(PREF_BASE_URL_KEY, DEFAULT_BASE_URL)!!.trimEnd('/')
+
+    override fun headersBuilder(): Headers.Builder = super.headersBuilder()
+        .add("Referer", baseUrl)
 
     companion object {
         private const val TAG = "VoirAnime"
@@ -66,6 +69,9 @@ class VoirAnime : ParsedAnimeHttpSource(), ConfigurableAnimeSource {
             "Stape",
             "FHD1",
         )
+
+        private const val PREF_BASE_URL_KEY = "base_url"
+        private const val DEFAULT_BASE_URL = "https://voiranime.tv"
 
         private const val PREF_PREFERRED_QUALITY = "preferred_quality"
         private const val DEFAULT_PREFERRED_QUALITY = "1080"
@@ -94,6 +100,20 @@ class VoirAnime : ParsedAnimeHttpSource(), ConfigurableAnimeSource {
             entryValues = PLAYER_VALUES
             setDefaultValue(DEFAULT_PREFERRED_PLAYER)
             summary = "Le lecteur sélectionné sera affiché en premier dans la liste des sources vidéo.\n\nActuel: %s"
+        }.also { screen.addPreference(it) }
+
+        EditTextPreference(screen.context).apply {
+            key = PREF_BASE_URL_KEY
+            title = "URL du site"
+            summary = "URL actuelle : ${preferences.getString(PREF_BASE_URL_KEY, DEFAULT_BASE_URL)}"
+            dialogTitle = "Modifier l'URL du site"
+            dialogMessage = "Entrez la nouvelle URL (ex: https://voiranime.tv)"
+            setDefaultValue(DEFAULT_BASE_URL)
+
+            setOnPreferenceChangeListener { _, newValue ->
+                summary = "URL actuelle : $newValue"
+                true
+            }
         }.also { screen.addPreference(it) }
 
         ListPreference(screen.context).apply {
