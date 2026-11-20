@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.util.Log
 
 /**
- * Springboard that accepts https://voiranime.tv/ intents
+ * Springboard that accepts https://voiranime.cx/ intents
  * and redirects them to the main Aniyomi process.
  */
 class VoirAnimeUrlActivity : Activity() {

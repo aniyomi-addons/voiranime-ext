@@ -16,7 +16,7 @@
 
                 <data
                     android:scheme="https"
-                    android:host="voiranime.tv"
+                    android:host="voiranime.cx"
                     android:pathPattern="/anime/.*" />
             </intent-filter>
 

@@ -46,7 +46,11 @@ class VoirAnime : ParsedAnimeHttpSource(), ConfigurableAnimeSource {
     }
 
     override val baseUrl: String
-        get() = preferences.getString(PREF_BASE_URL_KEY, DEFAULT_BASE_URL)!!.trimEnd('/')
+        get() {
+            val saved = preferences.getString(PREF_BASE_URL_KEY, DEFAULT_BASE_URL)!!.trimEnd('/')
+            // A domain the site has abandoned must not stay stuck in the preference.
+            return if (DEAD_DOMAINS.any { saved.contains(it) }) DEFAULT_BASE_URL else saved
+        }
 
     override fun headersBuilder(): Headers.Builder = super.headersBuilder()
         .add("Referer", baseUrl)
@@ -98,7 +102,8 @@ class VoirAnime : ParsedAnimeHttpSource(), ConfigurableAnimeSource {
         )
 
         private const val PREF_BASE_URL_KEY = "base_url"
-        private const val DEFAULT_BASE_URL = "https://voiranime.tv"
+        private const val DEFAULT_BASE_URL = "https://voiranime.cx"
+        private val DEAD_DOMAINS = listOf("voiranime.tv", "voir-anime.to")
 
         private const val PREF_PREFERRED_QUALITY = "preferred_quality"
         private const val DEFAULT_PREFERRED_QUALITY = "1080"
@@ -134,7 +139,7 @@ class VoirAnime : ParsedAnimeHttpSource(), ConfigurableAnimeSource {
             title = "URL du site"
             summary = "URL actuelle : ${preferences.getString(PREF_BASE_URL_KEY, DEFAULT_BASE_URL)}"
             dialogTitle = "Modifier l'URL du site"
-            dialogMessage = "Entrez la nouvelle URL (ex: https://voiranime.tv)"
+            dialogMessage = "Entrez la nouvelle URL (ex: https://voiranime.cx)"
             setDefaultValue(DEFAULT_BASE_URL)
 
             setOnPreferenceChangeListener { _, newValue ->
@@ -214,7 +219,9 @@ class VoirAnime : ParsedAnimeHttpSource(), ConfigurableAnimeSource {
         }?.let { transformThumbnailUrl(it) }
     }
 
-    override fun popularAnimeNextPageSelector(): String = "a.nextpostslink"
+    // The theme now renders the next page as "Older Posts" in div.nav-previous;
+    // a.nextpostslink is kept for older versions of the theme.
+    override fun popularAnimeNextPageSelector(): String = "div.nav-previous a, a.nextpostslink"
 
     // =============================== Latest ===============================
 

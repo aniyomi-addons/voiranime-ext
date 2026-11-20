@@ -12,7 +12,7 @@
 
 ## 📖 About
 
-This is an **Aniyomi extension** that provides access to [VoirAnime](https://voiranime.tv), a popular French anime streaming website. Watch your favorite anime in VF (French dub) or VOSTFR (French subtitles) directly within the Aniyomi app.
+This is an **Aniyomi extension** that provides access to [VoirAnime](https://voiranime.cx), a popular French anime streaming website. Watch your favorite anime in VF (French dub) or VOSTFR (French subtitles) directly within the Aniyomi app.
 
 ### Features
 
@@ -98,7 +98,7 @@ The extension provides comprehensive search filters:
 ### Deep Link Support
 
 You can open anime directly from your browser:
-1. Visit any anime page on voiranime.tv
+1. Visit any anime page on voiranime.cx
 2. The link will automatically open in Aniyomi
 3. The anime will be loaded directly in the app
 
